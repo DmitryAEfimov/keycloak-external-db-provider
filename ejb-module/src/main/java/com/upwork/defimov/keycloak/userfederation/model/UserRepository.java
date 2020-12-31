@@ -56,10 +56,10 @@ public class UserRepository {
 				.setParameter("search", search.toUpperCase()).getResultStream();
 	}
 
-	public Stream<User> findByFullName(String firstName, String lastName) {
+	public Stream<User> findByFirstOrLastNames(String firstName, String lastName) {
 		String nullSafeFirstName = ObjectUtils.defaultIfNull(firstName, "");
 		String nullSafeLastName = ObjectUtils.defaultIfNull(lastName, "");
-		return em.createNamedQuery(User.GET_USERS_MATCH_FULL_NAME, User.class)
+		return em.createNamedQuery(User.GET_USERS_MATCH_NAMES, User.class)
 				.setParameter("firstName", nullSafeFirstName.toUpperCase())
 				.setParameter("lastName", nullSafeLastName.toUpperCase()).getResultStream();
 	}

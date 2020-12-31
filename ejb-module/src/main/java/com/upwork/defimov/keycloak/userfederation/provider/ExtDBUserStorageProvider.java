@@ -166,9 +166,7 @@ public class ExtDBUserStorageProvider implements UserStorageProvider, UserLookup
 	public Stream<UserModel> searchForUserStream(String search, RealmModel realm) {
 		logger.debugv("search for users: realm={0} search={1}", realm.getId(), search);
 
-		// Ther is ability to search by full name = "full_name + last_name"
-		// fullName != "search + search" so exlcude last
-		Map<String, String> searchParameters = SUPPORTED_PARAMETERS.stream().filter(param -> !"last".equals(param))
+		Map<String, String> searchParameters = SUPPORTED_PARAMETERS.stream().filter(param -> !"enabled".equals(param))
 				.collect(Collectors.toMap(Function.identity(), (val) -> search));
 		return searchForUserStream(searchParameters, realm);
 	}
@@ -190,9 +188,10 @@ public class ExtDBUserStorageProvider implements UserStorageProvider, UserLookup
 		}
 
 		Stream<User> result = Stream.empty();
-		boolean fullNameSearch = false;
 		for (Map.Entry<String, String> paramEntry : params.entrySet()) {
-			if (SUPPORTED_PARAMETERS.contains(paramEntry.getKey().toUpperCase())) {
+			if (SUPPORTED_PARAMETERS.contains(paramEntry.getKey().toLowerCase())) {
+				logger.debugv("current param {0} with value {1}", paramEntry.getKey(), paramEntry.getValue());
+
 				switch (paramEntry.getKey().toLowerCase()) {
 				case "username":
 				case "email":
@@ -202,19 +201,15 @@ public class ExtDBUserStorageProvider implements UserStorageProvider, UserLookup
 				case "last":
 					String firstName = params.get("first");
 					String lastName = params.get("last");
-					result = Stream.concat(result, users.findByFullName(firstName, lastName));
-					fullNameSearch = true;
+					result = Stream.concat(result, users.findByFirstOrLastNames(firstName, lastName));
 					break;
 				case "enabled":
 					return getUsersStream(realm);
 				}
-
-				if (fullNameSearch)
-					break;
 			}
 		}
 
-		return result.map(user -> new UserAdapter(session, realm, model, user));
+		return result.distinct().map(user -> new UserAdapter(session, realm, model, user));
 	}
 
 	@Override

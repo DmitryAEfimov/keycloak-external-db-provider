@@ -15,7 +15,6 @@ import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
-import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -51,16 +50,16 @@ import com.vladmihalcea.hibernate.type.json.JsonBinaryType;
 		@NamedQuery(name = User.GET_USER_COUNT, query = "select count(u) from User u"),
 		@NamedQuery(name = User.GET_ALL_USERS, query = "select u from User u"),
 		@NamedQuery(
-				name = User.GET_USERS_MATCH_FULL_NAME,
-				query = "select u from User u where ( upper(u.firstName) like :firsName and upper(u.lastName) like :lastName ) order by u.username"),
+				name = User.GET_USERS_MATCH_NAMES,
+				query = "select u from User u where ( upper(u.firstName ) like '%' || :firstName || '%' or upper(u.lastName) like '%' || :lastName || '%') order by u.username"),
 		@NamedQuery(
 				name = User.GET_USERS_MATCH_USERNAME_OR_EMAIL,
-				query = "select u from User u where ( upper(u.username) like :search or upper(u.email) like :search ) order by u.username") })
+				query = "select u from User u where ( upper(u.username) like '%' || :search || '%' or upper(u.email) like '%' || :search || '%' ) order by u.username") })
 public class User implements Serializable {
 	public static final String GET_USER_BY_USERNAME = "getUserByUsername";
 	public static final String GET_USER_BY_EMAIL = "getUserByEmail";
 	public static final String GET_USERS_MATCH_USERNAME_OR_EMAIL = "getUsersMatchUsernameOrEmail";
-	public static final String GET_USERS_MATCH_FULL_NAME = "getUsersMatchFullName";
+	public static final String GET_USERS_MATCH_NAMES = "getUsersMatchNames";
 	public static final String GET_USER_COUNT = "getUserCount";
 	public static final String GET_ALL_USERS = "getAllUsers";
 
