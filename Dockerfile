@@ -17,10 +17,6 @@ ARG app_version=0.1
 
 # Internal Keycloak DB params
 ENV DB_VENDOR=postgres
-ENV DB_ADDR=postgresdb
-ENV DB_USER=keycloak_manager
-ENV DB_PASSWORD=passwd
-ENV DB_DATABASE=keycloak
 
 # External DB params for custom user provider
 ENV EXTDB_ADDR=postgresdb
