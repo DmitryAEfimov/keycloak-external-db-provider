@@ -10,8 +10,8 @@
     <packaging>pom</packaging>
 
     <modules>
-        <module>ear-module</module>
         <module>ejb-module</module>
+        <module>ear-module</module>
     </modules>
 
     <properties>
