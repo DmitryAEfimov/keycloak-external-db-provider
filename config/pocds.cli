@@ -1,0 +1,31 @@
+echo using ${env.JBOSS_HOME}/standalone/configuration/standalone-ha.xml
+
+embed-server --server-config=standalone-ha.xml --std-out=echo
+echo
+echo SETUP: Logging
+/subsystem=logging/logger=com.upwork.defimov.keycloak: add(category=com.upwork.defimov.keycloak, use-parent-handlers=true, level=DEBUG)
+/subsystem=logging/logger=org.hibernate.jdbc.AbstractBatcher: add(category=org.hibernate.jdbc.AbstractBatcher, use-parent-handlers=true, level=DEBUG)
+/subsystem=logging/logger=org.hibernate.hql.spi.id: add(category=org.hibernate.hql.spi.id, use-parent-handlers=true, level=DEBUG)
+/subsystem=logging/logger=org.hibernate.type: add(category=org.hibernate.type, use-parent-handlers=true, level=DEBUG)
+/subsystem=logging/logger=org.hibernate.impl.SessionImpl: add(category=org.hibernate.impl.SessionImpl, use-parent-handlers=true, level=DEBUG)
+/subsystem=logging/logger=org.hibernate.SQL: add(category=org.hibernate.SQL, use-parent-handlers=true, level=DEBUG)
+/subsystem=logging/logger=org.hibernate.type.descriptor.sql.BasicBinder: add(category=org.hibernate.type.descriptor.sql.BasicBinder, use-parent-handlers=true, level=DEBUG)
+
+/subsystem=logging/logger=org.keycloak.storage: add(category=org.keycloak.storage, use-parent-handlers=true, level=DEBUG)
+
+# Postgres driver (already defined as we use PG keycloak underlying database).
+#/subsystem=datasources/jdbc-driver=postgresql: add(driver-name=postgresql,driver-module-name=org.postgresql,driver-xa-datasource-class-name=org.postgresql.xa.PGXADataSource)
+
+echo
+echo SETUP: DataSource
+/subsystem=datasources/xa-data-source=PocDS: add(jndi-name="java:jboss/datasources/PocDS", enabled=true, use-java-context=true, use-ccm=true, driver-name="postgresql")
+/subsystem=datasources/xa-data-source=PocDS: write-attribute(name=user-name, value=${env.EXTDB_USER:})
+/subsystem=datasources/xa-data-source=PocDS: write-attribute(name=password, value=${env.EXTDB_PASSWORD:})
+/subsystem=datasources/xa-data-source=PocDS: write-attribute(name=check-valid-connection-sql, value="SELECT 1")
+/subsystem=datasources/xa-data-source=PocDS: write-attribute(name=background-validation, value=true)
+/subsystem=datasources/xa-data-source=PocDS: write-attribute(name=background-validation-millis, value=60000)
+/subsystem=datasources/xa-data-source=PocDS: write-attribute(name=flush-strategy, value=IdleConnections)
+
+/subsystem=datasources/xa-data-source=PocDS/xa-datasource-properties=URL :add(value=jdbc:postgresql://${env.EXTDB_ADDR:}:${env.EXTDB_PORT:5432}/${env.EXTDB_DATABASE:}?${env.EXTDB_JDBC_PARAMS:})
+
+echo SETUP: Completed

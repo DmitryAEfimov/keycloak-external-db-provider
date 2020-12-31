@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<parent>
+		<groupId>com.upwork.defimov.keycloak</groupId>
+		<artifactId>poc-extdb-storage-provider</artifactId>
+		<version>0.1</version>
+	</parent>
+	<modelVersion>4.0.0</modelVersion>
+
+	<artifactId>poc-extdb-storage-provider-bundle</artifactId>
+	<packaging>ear</packaging>
+
+	<dependencies>
+		<dependency>
+			<groupId>com.upwork.defimov.keycloak</groupId>
+			<artifactId>poc-extdb-storage-provider-module</artifactId>
+			<version>${project.version}</version>
+			<type>ejb</type>
+		</dependency>
+	</dependencies>
+
+	<build>
+		<plugins>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-ear-plugin</artifactId>
+				<version>3.1.0</version>
+				<configuration>
+					<version>8</version>
+					<applicationXml>target/application.xml</applicationXml>
+					<applicationName>extdb-storage-provider</applicationName>
+					<defaultLibBundleDir>lib</defaultLibBundleDir>
+					<outputFileNameMapping>@{artifactId}@-@{version}@.@{extension}@</outputFileNameMapping>
+					<modules>
+						<ejbModule>
+							<groupId>com.upwork.defimov.keycloak</groupId>
+							<artifactId>poc-extdb-storage-provider-module</artifactId>
+						</ejbModule>
+					</modules>
+				</configuration>
+			</plugin>
+		</plugins>
+	</build>
+</project>
