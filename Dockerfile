@@ -29,6 +29,6 @@ ENV EXTDB_JDBC_PARAMS=""
 COPY --from=builder /tmp/poc/ear-module/target/poc-extdb-storage-provider-bundle-${app_version}.ear /opt/jboss/keycloak/standalone/deployments/
 
 COPY config/pocds.cli /opt/jboss/startup-scripts/pocds.cli
-COPY config/realm_poc.json /tmp/realm_poc.json
+COPY config/realm_poc.json /tmp/realm.json
 
-ENV KEYCLOAK_IMPORT=/tmp/realm_poc.json
+ENV KEYCLOAK_IMPORT=/tmp/realm.json
