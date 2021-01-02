@@ -2,6 +2,8 @@ package com.upwork.defimov.keycloak.userfederation.model.jsonbmapping;
 
 import java.io.Serializable;
 
+import javax.json.Json;
+
 import org.jboss.logging.Logger;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
@@ -16,7 +18,7 @@ public class UserSettings implements Serializable {
 	private final Object settings;
 
 	public UserSettings() {
-		this.settings = "{}";
+		this.settings = Json.createObjectBuilder();
 	}
 
 	public UserSettings(Object settings) {
