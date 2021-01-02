@@ -1,7 +1,5 @@
 package com.upwork.defimov.keycloak.userfederation.model;
 
-import static com.google.common.base.Preconditions.checkArgument;
-
 import java.io.Serializable;
 import java.util.Date;
 import java.util.Set;
@@ -27,8 +25,6 @@ import javax.persistence.TemporalType;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
 
-import org.apache.commons.collections4.CollectionUtils;
-import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.hibernate.annotations.Type;
 import org.hibernate.annotations.TypeDef;
@@ -69,22 +65,6 @@ public class User implements Serializable {
 
 	protected User() {
 		// JPA only
-	}
-
-	public User(@NotNull String username, @NotNull String password,
-			@Pattern(regexp = "^[A-Za-z0-9._%-]+@[A-Za-z0-9.-]+[.][A-Za-z]+$") String email, String firstName,
-			String lastName, Gender gender, String avatar, String phone, UserSettings settings,
-			Set<String> accountTypes) {
-		this.username = username;
-		this.password = password;
-		this.email = email;
-		this.firstName = firstName;
-		this.lastName = lastName;
-		this.gender = gender != null ? gender : Gender.decline;
-		this.avatar = avatar;
-		this.phone = phone;
-		this.settings = ObjectUtils.defaultIfNull(settings, new UserSettings());
-		this.roles = !CollectionUtils.isEmpty(roles) ? accountTypes : Set.of(DEFAULT_ROLE);
 	}
 
 	@NotNull
@@ -225,71 +205,5 @@ public class User implements Serializable {
 	public String getDisplayName() {
 		return !StringUtils.isEmpty(firstName) && !StringUtils.isEmpty(lastName) ? firstName + " " + lastName.charAt(0)
 				: null;
-	}
-
-	public static class Builder {
-		private String username;
-		private String password;
-		private String email;
-		private String firstName;
-		private String lastName;
-		private Gender gender;
-		private String avatar;
-		private String phone;
-		private UserSettings settings;
-		private Set<String> accountTypes;
-
-		public Builder(@NotNull String username, @NotNull String password) {
-			checkArgument(!StringUtils.isEmpty(username));
-			checkArgument(!StringUtils.isEmpty(password));
-
-			this.username = username;
-			this.password = password;
-		}
-
-		public Builder email(String email) {
-			this.email = email;
-			return this;
-		}
-
-		public Builder firstName(String firstName) {
-			this.firstName = firstName;
-			return this;
-		}
-
-		public Builder lastName(String lastName) {
-			this.lastName = lastName;
-			return this;
-		}
-
-		public Builder gender(Gender gender) {
-			this.gender = gender;
-			return this;
-		}
-
-		public Builder avatar(String avatar) {
-			this.avatar = avatar;
-			return this;
-		}
-
-		public Builder phone(String phone) {
-			this.phone = phone;
-			return this;
-		}
-
-		public Builder settings(UserSettings settings) {
-			this.settings = settings;
-			return this;
-		}
-
-		public Builder accounts(Set<String> accountTypes) {
-			this.accountTypes = accountTypes;
-			return this;
-		}
-
-		public User build() {
-			return new User(username, password, email, firstName, lastName, gender, avatar, phone, settings,
-					accountTypes);
-		}
 	}
 }

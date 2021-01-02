@@ -21,6 +21,7 @@ public class UserAdapter extends AbstractUserAdapterFederatedStorage {
 		super(session, realm, model);
 		this.user = user;
 		this.keycloakId = StorageId.keycloakId(model, user.getId().toString());
+
 		grantRoles();
 		initAttributes();
 	}
@@ -76,6 +77,12 @@ public class UserAdapter extends AbstractUserAdapterFederatedStorage {
 	}
 
 	private void initAttributes() {
+		logger.debugv("Init main attributes for userId={0}", user.getId());
+		setSingleAttribute(FIRST_NAME, user.getFirstName());
+		setSingleAttribute(LAST_NAME, user.getLastName());
+		setSingleAttribute(EMAIL, user.getEmail());
+		setSingleAttribute(EMAIL_VERIFIED, String.valueOf(true));
+
 		logger.debugv("Init additional attributes for userId={0}", user.getId());
 		setSingleAttribute("externalId", user.getId().toString());
 		setSingleAttribute("displayName", user.getDisplayName());

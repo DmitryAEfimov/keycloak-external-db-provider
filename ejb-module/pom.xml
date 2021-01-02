@@ -13,9 +13,7 @@
 	<packaging>ejb</packaging>
 
 	<properties>
-		<lombok.version>1.18.16</lombok.version>
 		<apache.commons.version>3.11</apache.commons.version>
-		<apache.collections.version>4.4</apache.collections.version>
 		<hibernate.version>5.3.20.Final</hibernate.version>
 	</properties>
 
@@ -86,12 +84,6 @@
 			<groupId>org.apache.commons</groupId>
 			<artifactId>commons-lang3</artifactId>
 			<version>${apache.commons.version}</version>
-		</dependency>
-
-		<dependency>
-			<groupId>org.apache.commons</groupId>
-			<artifactId>commons-collections4</artifactId>
-			<version>${apache.collections.version}</version>
 		</dependency>
 	</dependencies>
 
