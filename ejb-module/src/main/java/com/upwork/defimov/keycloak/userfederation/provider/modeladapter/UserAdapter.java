@@ -9,10 +9,13 @@ import org.keycloak.models.RoleModel;
 import org.keycloak.storage.StorageId;
 import org.keycloak.storage.adapter.AbstractUserAdapterFederatedStorage;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.upwork.defimov.keycloak.userfederation.model.User;
 
 public class UserAdapter extends AbstractUserAdapterFederatedStorage {
 	private static final Logger logger = Logger.getLogger(UserAdapter.class);
+	private ObjectMapper objectMapper = new ObjectMapper();
 
 	private final User user;
 	private final String keycloakId;
@@ -89,8 +92,11 @@ public class UserAdapter extends AbstractUserAdapterFederatedStorage {
 		setSingleAttribute("gender", user.getGender().name());
 		setSingleAttribute("avatar", user.getAvatar());
 		setSingleAttribute("phone", user.getPhone());
-		setSingleAttribute("settings", user.getSettings().toString());
-
+		try {
+			setSingleAttribute("settings", objectMapper.writeValueAsString(user.getSettings()));
+		} catch (JsonProcessingException ex) {
+			logger.error("can't parse user settins", ex);
+		}
 		setCreatedTimestamp(user.getCreatedAt().getTime());
 	}
 
