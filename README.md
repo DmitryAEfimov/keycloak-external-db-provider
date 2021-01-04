@@ -45,7 +45,7 @@ When use docker container you should define a network. For more information see 
 * See [Oficial Keycloak Docker](https://hub.docker.com/r/jboss/keycloak) to configure other Keycloak environments
 
 ## Deployment
-    docker build -t keycloak:0.1 .
+    docker build -t keycloak .
     && docker run
     -p 8080:8080
     --env KEYCLOAK_PASSWORD=<keycloak_pass>
@@ -58,7 +58,7 @@ When use docker container you should define a network. For more information see 
     -t
     -i
     --net keycloak-network
-    keycloak:0.1
+    keycloak
 
 ## Configure Admin Console
 1. Login to keycloak with KEYCLOAK_USER and KEYCLOAK_PASSWORD.
