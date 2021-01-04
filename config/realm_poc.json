@@ -332,7 +332,7 @@
     }
   },
   "groups" : [ ],
-  "defaultRoles" : [ "offline_access", "uma_authorization" ],
+  "defaultRoles" : [ "offline_access", "uma_authorization", "regular" ],
   "requiredCredentials" : [ "password" ],
   "otpPolicyType" : "totp",
   "otpPolicyAlgorithm" : "HmacSHA1",
