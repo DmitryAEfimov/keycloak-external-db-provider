@@ -2,6 +2,7 @@ package com.upwork.defimov.keycloak.userfederation.provider;
 
 import javax.naming.InitialContext;
 
+import com.upwork.defimov.keycloak.userfederation.provider.password.BCryptPasswordHashValidator;
 import org.jboss.logging.Logger;
 import org.keycloak.component.ComponentModel;
 import org.keycloak.models.KeycloakSession;
@@ -23,6 +24,7 @@ public class ExtDBUserStorageProviderFactory implements UserStorageProviderFacto
 
 			provider.setModel(model);
 			provider.setSession(session);
+			provider.setPasswordValidator(new BCryptPasswordHashValidator());
 			return provider;
 		} catch (Exception e) {
 			throw new RuntimeException(e);

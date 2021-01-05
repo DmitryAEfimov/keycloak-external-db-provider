@@ -1,6 +1,5 @@
 package com.upwork.defimov.keycloak.userfederation.provider;
 
-import java.util.Collections;
 import java.util.Map;
 import java.util.Set;
 import java.util.function.Function;
@@ -15,7 +14,6 @@ import javax.inject.Inject;
 import org.jboss.logging.Logger;
 import org.keycloak.component.ComponentModel;
 import org.keycloak.credential.CredentialInput;
-import org.keycloak.credential.CredentialInputUpdater;
 import org.keycloak.credential.CredentialInputValidator;
 import org.keycloak.models.GroupModel;
 import org.keycloak.models.KeycloakSession;
@@ -23,7 +21,6 @@ import org.keycloak.models.RealmModel;
 import org.keycloak.models.UserCredentialModel;
 import org.keycloak.models.UserModel;
 import org.keycloak.models.credential.PasswordCredentialModel;
-import org.keycloak.storage.ReadOnlyException;
 import org.keycloak.storage.StorageId;
 import org.keycloak.storage.UserStorageProvider;
 import org.keycloak.storage.user.UserLookupProvider;
@@ -32,11 +29,12 @@ import org.keycloak.storage.user.UserQueryProvider;
 import com.upwork.defimov.keycloak.userfederation.model.User;
 import com.upwork.defimov.keycloak.userfederation.model.UserRepository;
 import com.upwork.defimov.keycloak.userfederation.provider.modeladapter.UserAdapter;
+import com.upwork.defimov.keycloak.userfederation.provider.password.PasswordValidator;
 
 @Stateful
 @Local(ExtDBUserStorageProvider.class)
-public class ExtDBUserStorageProvider implements UserStorageProvider, UserLookupProvider, UserQueryProvider.Streams,
-		CredentialInputUpdater, CredentialInputValidator {
+public class ExtDBUserStorageProvider
+		implements UserStorageProvider, UserLookupProvider, UserQueryProvider.Streams, CredentialInputValidator {
 	private static final Logger logger = Logger.getLogger(ExtDBUserStorageProvider.class);
 	private static final Set<String> SUPPORTED_PARAMETERS = Set.of("first", "last", "email", "username", "enabled");
 
@@ -45,6 +43,7 @@ public class ExtDBUserStorageProvider implements UserStorageProvider, UserLookup
 
 	private KeycloakSession session;
 	private ComponentModel model;
+	private PasswordValidator passwordValidator;
 
 	public void setSession(KeycloakSession session) {
 		this.session = session;
@@ -52,6 +51,10 @@ public class ExtDBUserStorageProvider implements UserStorageProvider, UserLookup
 
 	public void setModel(ComponentModel model) {
 		this.model = model;
+	}
+
+	public void setPasswordValidator(PasswordValidator passwordValidator) {
+		this.passwordValidator = passwordValidator;
 	}
 
 	// ================== CredentialInputValidator begin ============
@@ -72,35 +75,12 @@ public class ExtDBUserStorageProvider implements UserStorageProvider, UserLookup
 		boolean valid = false;
 		if (supportsCredentialType(input.getType()) && input instanceof UserCredentialModel) {
 			User entity = users.findByUsername(user.getUsername());
-			valid = entity != null && entity.getPassword().equals(input.getChallengeResponse());
+			valid = entity != null && passwordValidator.validate(entity.getPassword(), input.getChallengeResponse());
 		}
 
 		return valid;
 	}
 	// ================== CredentialInputValidator end ==============
-
-	// ================== CredentialInputUpdater begin =============
-	@Override
-	public boolean updateCredential(RealmModel realm, UserModel user, CredentialInput input) {
-		logger.debugv("updating credential: realm={0} user={1}", realm.getId(), user.getUsername());
-
-		if (input.getType().equals(PasswordCredentialModel.TYPE)) {
-			throw new ReadOnlyException("update user password in external DB");
-		}
-
-		return false;
-	}
-
-	@Override
-	public void disableCredentialType(RealmModel realm, UserModel user, String credentialType) {
-		// nothing to do
-	}
-
-	@Override
-	public Set<String> getDisableableCredentialTypes(RealmModel realm, UserModel user) {
-		return Collections.emptySet();
-	}
-	// ================== CredentialInputUpdater end ===============
 
 	// ================== UserStorageProvider begin =============
 	@Remove
